@@ -38,7 +38,6 @@ function populateShows(shows) {
       summary: "No Summary Found",
       ...series.show,
     };
-    console.log(show);
     const $show = $(
       `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
@@ -69,7 +68,6 @@ function populateShows(shows) {
 async function searchForShowAndDisplay() {
   const term = $searchQuery.val();
   const shows = await getShowsByTerm(term);
-  //console.log(shows);
 
   $episodesArea.hide();
   populateShows(shows);

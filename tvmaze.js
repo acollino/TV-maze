@@ -92,7 +92,9 @@ async function searchForShowAndDisplay() {
 
 $submit.on("click", async function (evt) {
   evt.preventDefault();
-  await searchForShowAndDisplay();
+  if ($searchQuery.get(0).reportValidity()) {
+    await searchForShowAndDisplay();
+  }
 });
 
 $showsList.on("click", async function (evt) {

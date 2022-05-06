@@ -1,11 +1,9 @@
 "use strict";
 
 const $showsList = $("#shows-list");
-const $episodesArea = $("#episodes-area");
 const $searchQuery = $("#search-query");
 const $submit = $("button[type=submit]");
-const $episodeList = $("#episodes-list");
-let $episodeContainer = $();
+let $episodeList = $();
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -33,25 +31,6 @@ function populateShows(shows) {
 
   for (let show of shows) {
     let showInfo = condenseShowInfo(show.show);
-    // const $show = $(
-    //   `<div data-show-id="${showInfo.id}" class="Show col-md-12 col-lg-6 mb-4">
-    //      <div class="media">
-    //        <img
-    //           src="${showInfo.image.medium}"
-    //           alt="Poster for ${showInfo.name}"
-    //           class="w-25 mr-3">
-    //        <div class="media-body">
-    //          <h5 class="text-primary">${showInfo.name}</h5>
-    //          <div><small>${showInfo.summary}</small></div>
-    //          <button class="btn btn-outline-light btn-sm Show-getEpisodes">
-    //            Episodes
-    //          </button>
-    //        </div>
-    //      </div>
-    //    </div>
-    //
-    //   `
-    // );
     const $show = $(
       `<div 
           data-show-id="${showInfo.id}"
@@ -124,7 +103,6 @@ async function searchForShowAndDisplay() {
   const term = $searchQuery.val();
   const shows = await getShowsByTerm(term);
 
-  $episodesArea.hide();
   populateShows(shows);
 }
 
@@ -173,13 +151,12 @@ async function getEpisodesOfShow(id) {
     information.
  */
 async function populateEpisodes(episodes) {
-  //$episodesArea.show();
-  $episodeContainer.remove();
-  if ($episodeContainer.find("#episodes").data("showId") === episodes.showID) {
-    $episodeContainer = $();
+  $episodeList.remove();
+  if ($episodeList.find("#episodes").data("showId") === episodes.showID) {
+    $episodeList = $();
     return;
   }
-  createEpisodeContainer(episodes.showID);
+  createEpisodeList(episodes.showID);
   const $list = $("#episodes");
   for (let episode of episodes.episodeData) {
     let episodeInfo = {
@@ -195,14 +172,13 @@ async function populateEpisodes(episodes) {
     const $episode = $(
       `<li>Season ${episodeInfo.season}, Episode ${episodeInfo.number}: ${episodeInfo.name} </li>`
     );
-    //$episodeList.append($episode);
     $list.append($episode);
   }
 }
 
-function createEpisodeContainer(showID) {
+function createEpisodeList(showID) {
   const $card = $(`.Show[data-show-id = ${showID}]`);
-  $episodeContainer = $(
+  $episodeList = $(
     `<div class="row g-0 border-top border-bottom">
         <div class="card-body bg-light rounded-bottom"
           style="height: 100%;">
@@ -214,5 +190,5 @@ function createEpisodeContainer(showID) {
         </div>
       </div>`
   );
-  $card.append($episodeContainer);
+  $card.append($episodeList);
 }

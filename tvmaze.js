@@ -5,6 +5,7 @@ const $episodesArea = $("#episodes-area");
 const $searchQuery = $("#search-query");
 const $submit = $("button[type=submit]");
 const $episodeList = $("#episodes-list");
+let $episodeContainer = $();
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -32,21 +33,59 @@ function populateShows(shows) {
 
   for (let show of shows) {
     let showInfo = condenseShowInfo(show.show);
+    // const $show = $(
+    //   `<div data-show-id="${showInfo.id}" class="Show col-md-12 col-lg-6 mb-4">
+    //      <div class="media">
+    //        <img
+    //           src="${showInfo.image.medium}"
+    //           alt="Poster for ${showInfo.name}"
+    //           class="w-25 mr-3">
+    //        <div class="media-body">
+    //          <h5 class="text-primary">${showInfo.name}</h5>
+    //          <div><small>${showInfo.summary}</small></div>
+    //          <button class="btn btn-outline-light btn-sm Show-getEpisodes">
+    //            Episodes
+    //          </button>
+    //        </div>
+    //      </div>
+    //    </div>
+    //
+    //   `
+    // );
     const $show = $(
-      `<div data-show-id="${showInfo.id}" class="Show col-md-12 col-lg-6 mb-4">
-         <div class="media">
-           <img 
-              src="${showInfo.image.medium}"
-              alt="Poster for ${showInfo.name}"
-              class="w-25 mr-3">
-           <div class="media-body">
-             <h5 class="text-primary">${showInfo.name}</h5>
-             <div><small>${showInfo.summary}</small></div>
-             <button class="btn btn-outline-light btn-sm Show-getEpisodes">
-               Episodes
-             </button>
-           </div>
-         </div>  
+      `<div 
+          data-show-id="${showInfo.id}"
+          class="Show card" 
+          style="height: fit-content; width: 37rem; padding: 0; margin: 1rem; background-color:#d6d6d6;"
+          >
+          <div class="row g-0"
+            style="height: 20rem;">
+            <div class="col-md-4"
+              style="height: 100%;">
+              <img
+                src="${showInfo.image.original}"
+                alt="Poster for ${showInfo.name}"
+                class="rounded-start"
+                style="max-width: 100%; height:100%"
+              >
+            </div>
+            <div class="col-md-8"
+              style="height: 100%;">
+              <div class="card-body" style="background-color:#d6d6d6;">
+                <h5 class="card-title text-center">${showInfo.name}</h5>
+              </div>
+              <div 
+                class="border-start bg-light"
+                style="overflow-y: auto; padding: 1rem; height: 60%">
+                ${showInfo.summary}
+              </div>
+              <div style="padding: 1rem; background-color:#d6d6d6;">
+                <button class="btn btn-dark btn-sm Show-getEpisodes">
+                  Episodes
+                </button>
+              </div>
+            </div>
+          </div>
        </div>
       `
     );
@@ -54,7 +93,6 @@ function populateShows(shows) {
     $showsList.append($show);
   }
 }
-
 
 /*  Summarize the show into the relevant data and avoid
     iterating over all object attributes while checking 
@@ -100,8 +138,8 @@ $submit.on("click", async function (evt) {
 $showsList.on("click", async function (evt) {
   if (evt.target.nodeName === "BUTTON") {
     let showID = $(evt.target).closest("div.Show").data("show-id");
-    let episodes = await getEpisodesOfShow(showID);
-    populateEpisodes(episodes);
+    let episodeData = await getEpisodesOfShow(showID);
+    populateEpisodes({ showID, episodeData });
   }
 });
 
@@ -134,10 +172,16 @@ async function getEpisodesOfShow(id) {
     in case the list from the GET request is missing any
     information.
  */
-function populateEpisodes(episodes) {
-  $episodesArea.show();
-  $episodeList.empty();
-  for (let episode of episodes) {
+async function populateEpisodes(episodes) {
+  //$episodesArea.show();
+  $episodeContainer.remove();
+  if ($episodeContainer.find("#episodes").data("showId") === episodes.showID) {
+    $episodeContainer = $();
+    return;
+  }
+  createEpisodeContainer(episodes.showID);
+  const $list = $("#episodes");
+  for (let episode of episodes.episodeData) {
     let episodeInfo = {
       name: episode.name,
       season: episode.season,
@@ -151,6 +195,24 @@ function populateEpisodes(episodes) {
     const $episode = $(
       `<li>Season ${episodeInfo.season}, Episode ${episodeInfo.number}: ${episodeInfo.name} </li>`
     );
-    $episodeList.append($episode);
+    //$episodeList.append($episode);
+    $list.append($episode);
   }
+}
+
+function createEpisodeContainer(showID) {
+  const $card = $(`.Show[data-show-id = ${showID}]`);
+  $episodeContainer = $(
+    `<div class="row g-0 border-top border-bottom">
+        <div class="card-body bg-light rounded-bottom"
+          style="height: 100%;">
+          <h5 class="card-title text-center">Episodes</h5>
+          <ul id="episodes" 
+            style="max-height: 15rem; overflow-y: auto; background-color: #e8e8e8;"
+            data-show-id="${showID}">
+            </ul>
+        </div>
+      </div>`
+  );
+  $card.append($episodeContainer);
 }

@@ -7,21 +7,21 @@
       href="https://unpkg.com/bootstrap/dist/css/bootstrap.css"
     />
   </head>
-  <body>
+  <body class="bg-dark bg-gradient" style="background: fixed;">
     <div class="container">
-      <h1>TV Maze</h1>
+      <h1 class="text-center text-light">TV Maze</h1>
 
-      <form class="form-inline" id="search-form">
+      <form class="form-inline text-center" id="search-form">
         <input
-          class="form-control"
+          class="form-control w-25 d-inline"
           id="search-query"
-          placeholder="Enter a TV series name"
+          placeholder="Enter a TV series"
           required
         />
-        <button class="btn btn-primary" type="submit">Go!</button>
+        <button class="btn btn-primary align-baseline" type="submit">Go!</button>
       </form>
 
-      <div class="row mt-3" id="shows-list"></div>
+      <div class="row mt-3 mb-3 justify-content-center" id="shows-list"></div>
 
       <script src="https://unpkg.com/jquery"></script>
       <script src="https://unpkg.com/axios/dist/axios.js"></script>

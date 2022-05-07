@@ -35,31 +35,34 @@ function populateShows(shows) {
       `<div 
           data-show-id="${showInfo.id}"
           class="Show card" 
-          style="height: fit-content; width: 37rem; padding: 0; margin: 1rem; background-color:#d6d6d6;"
+          style="height: fit-content; width: 33.3rem; padding: 0; margin: 1rem; background-color:#d6d6d6;"
           >
           <div class="row g-0"
-            style="height: 20rem;">
-            <div class="col-md-4"
+            style="height: 18.5rem;">
+            <div class="col-md-auto"
               style="height: 100%;">
               <img
-                src="${showInfo.image.original}"
+                src="${showInfo.image.medium}"
                 alt="Poster for ${showInfo.name}"
                 class="rounded-start"
-                style="max-width: 100%; height:100%"
-              >
+                style="height: 100%; max-width: 13.15rem"
+                >
             </div>
-            <div class="col-md-8"
-              style="height: 100%;">
-              <div class="card-body" style="background-color:#d6d6d6;">
-                <h5 class="card-title text-center">${showInfo.name}</h5>
+            <div class="col-md-7"
+              style="height: 100%; width: 20rem">
+              <div class="card-body" 
+                style="background-color:#d6d6d6; padding: 0.5rem;">
+                <h5 class="card-title text-center"
+                  style="margin: 0;">
+                  ${showInfo.name}</h5>
               </div>
-              <div 
+              <div
                 class="border-start bg-light"
-                style="overflow-y: auto; padding: 1rem; height: 60%">
+                style="overflow-y: auto; padding: 1rem; height: 70%">
                 ${showInfo.summary}
               </div>
-              <div style="padding: 1rem; background-color:#d6d6d6;">
-                <button class="btn btn-dark btn-sm Show-getEpisodes">
+              <div style="padding: 0.5rem; background-color:#d6d6d6;">
+                <button class="btn btn-dark btn-sm Show-getEpisodes d-block mx-auto">
                   Episodes
                 </button>
               </div>
@@ -180,8 +183,7 @@ function createEpisodeList(showID) {
   const $card = $(`.Show[data-show-id = ${showID}]`);
   $episodeList = $(
     `<div class="row g-0 border-top border-bottom">
-        <div class="card-body bg-light rounded-bottom"
-          style="height: 100%;">
+        <div class="card-body bg-light rounded-bottom">
           <h5 class="card-title text-center">Episodes</h5>
           <ul id="episodes" 
             style="max-height: 15rem; overflow-y: auto; background-color: #e8e8e8;"

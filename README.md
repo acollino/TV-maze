@@ -1,4 +1,4 @@
-TV Maze is a browser app that lets you search for a TV series, pulling up the series poster, its summary, and making the full episode list available to you with the click of a button!
+Show Search is a browser app that lets you search for a TV series, pulling up the series poster, its summary, and making the full episode list available to you with the click of a button!
 
 Give it a try here: https://acollino.github.io/TV-maze/
 

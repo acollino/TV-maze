@@ -1,34 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <title>TV Maze</title>
-    <link rel="stylesheet"
-      href="https://unpkg.com/bootstrap/dist/css/bootstrap.css">
+    <title>Show Search</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/bootstrap/dist/css/bootstrap.css"
+    />
   </head>
-  <body>
+  <body class="bg-dark bg-gradient" style="background: fixed">
     <div class="container">
+      <h1 class="text-center text-light mt-3">Show Search</h1>
+      <div style="margin: 1rem auto; text-align: center; color: antiquewhite">
+        <span>Powered by</span>
+        <a href="https://www.tvmaze.com/api" target="_blank"
+          ><img
+            src="https://static.tvmaze.com/images/tvm-header-logo.png"
+            style="width: 5rem"
+            alt="Logo for TV Maze API"
+        /></a>
+      </div>
 
-    <h1>TV Maze</h1>
+      <form class="form-inline text-center" id="search-form">
+        <input
+          class="form-control w-25 d-inline"
+          id="search-query"
+          placeholder="Enter a TV series"
+          required
+        />
+        <button class="btn btn-primary align-baseline" type="submit">
+          Go!
+        </button>
+      </form>
 
-    <form class="form-inline" id="search-form">
-      <input class="form-control" id="search-query" placeholder="Enter a TV series name" required>
-      <button class="btn btn-primary" type="submit">Go!</button>
-    </form>
+      <div class="row mt-3 mb-3 justify-content-center" id="shows-list"></div>
 
-    <div class="row mt-3" id="shows-list">
+      <script src="https://unpkg.com/jquery"></script>
+      <script src="https://unpkg.com/axios/dist/axios.js"></script>
+      <script src="tvmaze.js"></script>
     </div>
-
-    <section style="display: none" id="episodes-area">
-      <h2>Episodes</h2> 
-      <ul id="episodes-list">
-      </ul>
-    </section>  
-
-    <script src="https://unpkg.com/jquery"></script>
-    <script src="https://unpkg.com/axios/dist/axios.js"></script>
-    <script src="tvmaze.js"></script>
-
-    </div>
-
   </body>
 </html>

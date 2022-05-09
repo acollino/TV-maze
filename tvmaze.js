@@ -13,7 +13,6 @@ let $episodeList = $();
  */
 
 async function getShowsByTerm(searchTerm) {
-  // ADD: Remove placeholder & make request to TVMaze search shows API.
   try {
     let searchResults = await axios.get("https://api.tvmaze.com/search/shows", {
       params: { q: searchTerm },
@@ -24,13 +23,25 @@ async function getShowsByTerm(searchTerm) {
   }
 }
 
-/** Given list of shows, create markup for each and to DOM */
+/** Given list of shows, create markup for each and to DOM 
+ *  A random ID is generated in case none was supplied to avoid
+ *  ID conflicts later in the code, but is made negative to indicate
+ *  that it is not a valid ID.
+*/
 
 function populateShows(shows) {
   $showsList.empty();
 
   for (let show of shows) {
-    let showInfo = condenseShowInfo(show.show);
+    let showInfo = extractDataWithDefaultValues(
+      new Map([
+        ["image", { medium: "https://tinyurl.com/tv-missing" }],
+        ["name", "No Name"],
+        ["summary", "No Summary"],
+        ["id", -1*Math.floor(Math.random()*1000)],
+      ]),
+      show.show
+    );
     const $show = $(
       `<div 
           data-show-id="${showInfo.id}"
@@ -71,41 +82,34 @@ function populateShows(shows) {
        </div>
       `
     );
-
     $showsList.append($show);
   }
 }
 
-/*  Summarize the show into the relevant data and avoid
-    iterating over all object attributes while checking 
-    for null values from the GET request.
+/*  Summarize the show or episode into the relevant data and check 
+    for null values from the GET request's returned object.
+
+    attributes - a Map of ["attribute", "defaultValue"] pairs
+
+    originalSource - the object from the TV Maze API containing the data 
  */
-function condenseShowInfo(show) {
-  let showInfo = {
-    image: show.image,
-    name: show.name,
-    summary: show.summary,
-    id: show.id,
-  };
-  if (showInfo.image === null || showInfo.image.medium === null) {
-    showInfo.image = { medium: "https://tinyurl.com/tv-missing" };
-  }
-  for (let attribute in showInfo) {
-    if (showInfo[attribute] === null) {
-      showInfo[attribute] = `No ${attribute}`;
+function extractDataWithDefaultValues(attributes, originalSource) {
+  let extracted = {};
+  for (let key of attributes.keys()) {
+    if (originalSource[key] && originalSource[key] !== null) {
+      extracted[key] = originalSource[key];
+    } else {
+      extracted[key] = attributes.get(key);
     }
   }
-  return showInfo;
+  return extracted;
 }
 
 /** Handle search form submission: get shows from API and display.
- *    Hide episodes area (that only gets shown if they ask for episodes)
  */
-
 async function searchForShowAndDisplay() {
   const term = $searchQuery.val();
   const shows = await getShowsByTerm(term);
-
   populateShows(shows);
 }
 
@@ -116,9 +120,17 @@ $submit.on("click", async function (evt) {
   }
 });
 
+/*  Either hide the same Episode List if clicked again or create and
+    append a new one to the show's information card.
+ */
 $showsList.on("click", async function (evt) {
   if (evt.target.nodeName === "BUTTON") {
+    $episodeList.remove();
     let showID = $(evt.target).closest("div.Show").data("show-id");
+    if ($episodeList.find("#episodes").data("showId") === showID) {
+      $episodeList = $();
+      return;
+    }
     let episodeData = await getEpisodesOfShow(showID);
     populateEpisodes({ showID, episodeData });
   }
@@ -127,7 +139,6 @@ $showsList.on("click", async function (evt) {
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
-
 async function getEpisodesOfShow(id) {
   try {
     let searchResults = await axios.get(
@@ -145,33 +156,25 @@ async function getEpisodesOfShow(id) {
 /** Write a clear docstring for this function... */
 
 /*  Given an array of episodes, iterate through it and append
-    the episode's information to the episode list UL. This also
-    reveals the episodeArea and empties the list of any previous
-    entries.
+    the episode's information to the episode list UL created 
+    with createEpisodeList().
     
-    To avoid any errors, the episodeInfo replaces null values
-    in case the list from the GET request is missing any
-    information.
+    To avoid any errors, extractDataWithDefaultValues is used to
+    replace null values from the GET request object with default
+    text while also extracting the required values.
  */
 async function populateEpisodes(episodes) {
-  $episodeList.remove();
-  if ($episodeList.find("#episodes").data("showId") === episodes.showID) {
-    $episodeList = $();
-    return;
-  }
   createEpisodeList(episodes.showID);
   const $list = $("#episodes");
   for (let episode of episodes.episodeData) {
-    let episodeInfo = {
-      name: episode.name,
-      season: episode.season,
-      number: episode.number,
-    };
-    for (let attribute in episodeInfo) {
-      if (episodeInfo[attribute] === null) {
-        episodeInfo[attribute] = `No ${attribute}`;
-      }
-    }
+    let episodeInfo = extractDataWithDefaultValues(
+      new Map([
+        ["name", "No Name"],
+        ["season", "Not Numbered"],
+        ["number", "Not Numbered"],
+      ]),
+      episode
+    );
     const $episode = $(
       `<li>Season ${episodeInfo.season}, Episode ${episodeInfo.number}: ${episodeInfo.name} </li>`
     );

@@ -60,7 +60,7 @@ function populateShows(shows) {
                 >
             </div>
             <div class="col-md-7"
-              style="height: 100%; width: 20rem">
+              style="height: 100%; width: 20rem; display: flex; flex-direction: column">
               <div class="card-body" 
                 style="background-color:#d6d6d6; padding: 0.5rem;">
                 <h5 class="card-title text-center"
